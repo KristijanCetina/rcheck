@@ -1,6 +1,6 @@
-NC="\033[0m"       # Text Reset
-RED="\033[0;31m"          # Red
-GREEN="\033[0;32m"        # Green
+NC="\033[0m"        # Text Reset
+RED="\033[0;31m"    # Red
+GREEN="\033[0;32m"  # Green
 
 # Function to display usage information
 usage() {

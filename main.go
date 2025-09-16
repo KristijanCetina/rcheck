@@ -20,6 +20,7 @@ func main() {
 	// Define named flags
 	expressionPtr := flag.String("e", "", "Regular expression pattern")
 	stringPtr := flag.String("s", "", "Input string to match against")
+	flagVerbose := flag.Bool("v", false, "Print time spent checking")
 
 	// Parse command-line flags
 	flag.Parse()
@@ -43,10 +44,12 @@ func main() {
 	duration := time.Since(start)
 	// Print result
 	if matched {
-		fmt.Println("The pattern matches the input string!")
+		fmt.Println("\033[32mThe pattern matches the input string!\033[0m")
 	} else {
-		fmt.Println("The pattern does not match the input string.")
+		fmt.Println("\033[0;31mThe pattern does not match the input string.\033[0m")
 	}
 	// Print time spent
-	fmt.Printf("Time spent checking match: %v\n", duration)
+	if *flagVerbose {
+		fmt.Printf("Time spent checking match: %v\n", duration)
+	}
 }
