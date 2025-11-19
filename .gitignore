@@ -18,3 +18,5 @@ go.work.sum
 .vscode/
 
 rcheck
+
+.DS_Store
