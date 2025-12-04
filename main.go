@@ -13,8 +13,7 @@ func checkRegexMatch(pattern, input string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("invalid regex pattern: %v", err)
 	}
-	match := re.FindString(input)
-	return match == input, nil
+	return re.MatchString(input), nil
 }
 
 func main() {
