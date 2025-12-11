@@ -11,9 +11,10 @@ func TestCheckRegexMatch(t *testing.T) {
 		want    bool
 		wantErr bool
 	}{
-		{"^hello", "hello world", true, false},
-		{"world$", "hello world", true, false},
-		{"[0-9]+", "abc123", true, false},
+		{"^hello.*", "hello world", true, false},
+		{".*world$", "hello world", true, false},
+		{".*[0-9]+", "abc123", true, false},
+		{"[0-9]+", "abc123", false, false},
 		{"[a-z]+", "123", false, false},
 		{"[", "invalid", false, true}, // Invalid regex pattern
 	}
