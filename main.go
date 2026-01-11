@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -23,24 +25,51 @@ type Config struct {
 	Verbose bool
 }
 
+func readFromStdin() (string, error) {
+	scanner := bufio.NewScanner(os.Stdin)
+	var input strings.Builder
+	for scanner.Scan() {
+		input.WriteString(scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		return "", fmt.Errorf("error reading stdin: %v", err)
+	}
+	return input.String(), nil
+}
+
 func parseFlags(args []string) (*Config, error) {
 	flagSet := flag.NewFlagSet(args[0], flag.ContinueOnError)
+	flagSet.Usage = func() {
+		fmt.Fprintf(flagSet.Output(), "Usage: %s -e <regex_pattern> [-s <input_string>]\n", args[0])
+		flagSet.PrintDefaults()
+	}
 
-	var config Config
-	flagSet.StringVar(&config.Pattern, "e", "", "Regular expression pattern")
-	flagSet.StringVar(&config.Input, "s", "", "Input string to match")
-	flagSet.BoolVar(&config.Verbose, "v", false, "Print time spent checking")
+	var pattern, input string
+	var verbose bool
+	flagSet.StringVar(&pattern, "e", "", "Regular expression pattern")
+	flagSet.StringVar(&input, "s", "", "Input string to match (optional, reads from stdin if not provided)")
+	flagSet.BoolVar(&verbose, "v", false, "Print time spent checking")
 
 	err := flagSet.Parse(args[1:])
 	if err != nil {
 		return nil, err
 	}
 
-	if config.Pattern == "" || config.Input == "" {
-		return nil, fmt.Errorf("both -e (pattern) and -s (input) flags are required")
+	if pattern == "" {
+		return nil, fmt.Errorf("the -e (pattern) flag is required")
 	}
 
-	return &config, nil
+	if input == "" {
+		input, err = readFromStdin()
+		if err != nil {
+			return nil, err
+		}
+		if input == "" {
+			return nil, fmt.Errorf("no input provided: use -s flag or pipe input via stdin")
+		}
+	}
+
+	return &Config{Pattern: pattern, Input: input, Verbose: verbose}, nil
 }
 
 func printResult(matched bool, duration time.Duration, verbose bool) {
@@ -70,8 +99,6 @@ func runChecker(config *Config) error {
 func main() {
 	config, err := parseFlags(os.Args)
 	if err != nil {
-		fmt.Println("Usage: go run program.go -e <regex_pattern> -s <input_string>")
-		flag.PrintDefaults()
 		os.Exit(1)
 	}
 

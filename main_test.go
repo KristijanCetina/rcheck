@@ -73,12 +73,10 @@ func TestParseFlags(t *testing.T) {
 		want    *Config
 		wantErr bool
 	}{
-		{"valid match", []string{"prog", "-e", "^hello", "-s", "hello world"}, &Config{Pattern: "^hello", Input: "hello world", Verbose: false}, false},
-		{"valid no match", []string{"prog", "-e", "^goodbye", "-s", "hello world"}, &Config{Pattern: "^goodbye", Input: "hello world", Verbose: false}, false},
+		{"valid match with -s", []string{"prog", "-e", "^hello", "-s", "hello world"}, &Config{Pattern: "^hello", Input: "hello world", Verbose: false}, false},
+		{"valid no match with -s", []string{"prog", "-e", "^goodbye", "-s", "hello world"}, &Config{Pattern: "^goodbye", Input: "hello world", Verbose: false}, false},
 		{"with verbose flag", []string{"prog", "-e", "test", "-s", "test", "-v"}, &Config{Pattern: "test", Input: "test", Verbose: true}, false},
 		{"missing expression flag", []string{"prog", "-s", "test"}, nil, true},
-		{"missing string flag", []string{"prog", "-e", "test"}, nil, true},
-		{"missing both flags", []string{"prog"}, nil, true},
 		{"invalid flag", []string{"prog", "-x", "invalid"}, nil, true},
 	}
 
